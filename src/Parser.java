@@ -3,101 +3,101 @@ public class Parser {
 
     // Converts a postfix expression into an AST.
     // Uses a stack to store numbers and completed subtrees.
-    public static AST parsePostfix(String input) {
+    public static AST parsePostfix(String str) {
 
-        if (input.trim().isEmpty()) {
+        if (str.trim().isEmpty()) {
             throw new IllegalArgumentException("empty input");
         }
 
-        String[] tokens = input.trim().split("\s+");
-        ArrayStack<AST> stack = ArrayStack.emptyStack();
-        for (String token : tokens) {
+        String[] tokens = str.trim().split("\s+");
+        ArrayStack<AST> s = ArrayStack.emptyStack();
+        for (String t : tokens) {
 
-            if (isOperator(token)) {
-                applyOperator(stack, token);
-            } else if (isNumber(token)) {
-                double number = Double.parseDouble(token);
-                stack.push(new NumNode(number));
+            if (isOperator(t)) {
+                applyOperator(s, t);
+            } else if (isNumber(t)) {
+                double num = Double.parseDouble(t);
+                s.push(new NumNode(num));
             } else {
                 throw new IllegalArgumentException("invalid token");
             }
         }
 
-        if (stack.size() > 1) {
+        if (s.size() > 1) {
             throw new IllegalArgumentException("too many operands");
         }
 
-        return stack.pop();
+        return s.pop();
     }
 
     // Converts an infix expression into an AST using the Shunting-yard algorithm.
     // One stack holds the expressions and the other holds operators that are waiting.
-    public static AST parseInfix(String input) {
+    public static AST parseInfix(String str) {
 
-        if (input.trim().isEmpty()) {
+        if (str.trim().isEmpty()) {
             throw new IllegalArgumentException("empty input");
         }
 
-        String[] tokens = input.trim().split("\s+");
-        ArrayStack<AST> expressions = ArrayStack.emptyStack();
-        ArrayStack<String> operators = ArrayStack.emptyStack();
+        String[] tokens = str.trim().split("\s+");
+        ArrayStack<AST> exprs = ArrayStack.emptyStack();
+        ArrayStack<String> ops = ArrayStack.emptyStack();
 
-        for (String token : tokens) {
+        for (String t : tokens) {
 
-            if (isNumber(token)) {
-                double number = Double.parseDouble(token);
-                expressions.push(new NumNode(number));
-            } else if (token.equals("(")) {
-                operators.push(token);
-            } else if (token.equals(")")) {
-                closeParen(expressions, operators);
-            } else if (isOperator(token)) {
-                pushOperator(expressions, operators, token);
+            if (isNumber(t)) {
+                double num = Double.parseDouble(t);
+                exprs.push(new NumNode(num));
+            } else if (t.equals("(")) {
+                ops.push(t);
+            } else if (t.equals(")")) {
+                closeParen(exprs, ops);
+            } else if (isOperator(t)) {
+                pushOperator(exprs, ops, t);
             } else {
                 throw new IllegalArgumentException("invalid token");
             }
         }
 
         // Apply all the operators that are left.
-        while (!operators.isEmpty()) {
-            String operator = operators.pop();
+        while (!ops.isEmpty()) {
+            String op = ops.pop();
 
-            if (operator.equals("(")) {
+            if (op.equals("(")) {
                 throw new IllegalArgumentException("mismatched open paren");
             }
 
-            applyOperator(expressions, operator);
+            applyOperator(exprs, op);
         }
 
-        if (expressions.isEmpty()) {
+        if (exprs.isEmpty()) {
             throw new IllegalArgumentException("insufficient operands");
         }
 
-        if (expressions.size() > 1) {
+        if (exprs.size() > 1) {
             throw new IllegalArgumentException("too many operands");
         }
 
-        return expressions.pop();
+        return exprs.pop();
     }
 
     // Returns true if the token is a supported operator.
-    public static boolean isOperator(String token) {
-        return token.equals("+") || token.equals("-") || token.equals("*") || token.equals("/") || token.equals("^");
+    public static boolean isOperator(String t) {
+        return t.equals("+") || t.equals("-") || t.equals("*") || t.equals("/") || t.equals("^");
     }
 
     // Returns true if the token is a number like 5, -2, or 3.75.
     // A number can start with a minus sign and can have at most one decimal point.
-    public static boolean isNumber(String token) {
+    public static boolean isNumber(String t) {
         int start = 0;
-        if (token.charAt(0) == '-') {
+        if (t.charAt(0) == '-') {
             start = 1;
         }
 
         int digits = 0;
         int dots = 0;
 
-        for (int i = start; i < token.length(); i++) {
-            char c = token.charAt(i);
+        for (int i = start; i < t.length(); i++) {
+            char c = t.charAt(i);
 
             if (c >= '0' && c <= '9') {
                 digits++;
@@ -112,10 +112,10 @@ public class Parser {
     }
 
     // Returns the precedence of an operator. Higher numbers go first.
-    public static int precedence(String operator) {
-        if (operator.equals("^")) {
+    public static int precedence(String op) {
+        if (op.equals("^")) {
             return 3;
-        } else if (operator.equals("*") || operator.equals("/")) {
+        } else if (op.equals("*") || op.equals("/")) {
             return 2;
         }
 
@@ -124,69 +124,69 @@ public class Parser {
 
     // Returns true if the operator on top of the stack should be applied
     // before the new operator is pushed.
-    public static boolean shouldApplyFirst(String top, String current) {
+    public static boolean shouldApplyFirst(String top, String op) {
         if (top.equals("(")) {
             return false;
         }
 
-        if (precedence(top) > precedence(current)) {
+        if (precedence(top) > precedence(op)) {
             return true;
         }
 
         // ^ is right associative so it does not pop another ^.
-        return precedence(top) == precedence(current) && !current.equals("^");
+        return precedence(top) == precedence(op) && !op.equals("^");
     }
 
     // Applies operators from the stack that should go first,
     // then pushes the new operator.
     public static void pushOperator(
-            ArrayStack<AST> expressions,
-            ArrayStack<String> operators,
-            String operator
+            ArrayStack<AST> exprs,
+            ArrayStack<String> ops,
+            String op
     ) {
 
-        while (!operators.isEmpty() && shouldApplyFirst(operators.peek(), operator)) {
-            applyOperator(expressions, operators.pop());
+        while (!ops.isEmpty() && shouldApplyFirst(ops.peek(), op)) {
+            applyOperator(exprs, ops.pop());
         }
 
-        operators.push(operator);
+        ops.push(op);
     }
 
     // Applies operators until the matching open paren is found,
     // then removes the open paren.
     public static void closeParen(
-            ArrayStack<AST> expressions,
-            ArrayStack<String> operators
+            ArrayStack<AST> exprs,
+            ArrayStack<String> ops
     ) {
 
-        while (!operators.isEmpty() && !operators.peek().equals("(")) {
-            applyOperator(expressions, operators.pop());
+        while (!ops.isEmpty() && !ops.peek().equals("(")) {
+            applyOperator(exprs, ops.pop());
         }
 
-        if (operators.isEmpty()) {
+        if (ops.isEmpty()) {
             throw new IllegalArgumentException("mismatched close paren");
         }
 
-        operators.pop();
+        ops.pop();
     }
 
     // Applies an operator to the top two ASTs in the stack.
     public static void applyOperator(
-            ArrayStack<AST> stack,
-            String operator
+            ArrayStack<AST> s,
+            String op
     ) {
 
-        if (stack.size() < 2) {
+        if (s.size() < 2) {
             throw new IllegalArgumentException(
                     "insufficient operands"
             );
         }
 
-        AST right = stack.pop();
-        AST left = stack.pop();
+        AST right = s.pop();
+        AST left = s.pop();
 
-        AST result = new BinopNode(operator, left, right);
+        AST node = new BinopNode(op, left, right);
 
-        stack.push(result);
+        s.push(node);
     }
 }

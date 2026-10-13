@@ -6,65 +6,65 @@ public class ASTTest {
 
     @Test
     public void testNumNodeEval() {
-        AST node = new NumNode(7.5);
+        AST n = new NumNode(7.5);
 
-        assertEquals(7.5, node.eval());
+        assertEquals(7.5, n.eval());
     }
 
     @Test
     public void testAddEval() {
-        AST node = new BinopNode("+", new NumNode(2), new NumNode(3));
+        AST n = new BinopNode("+", new NumNode(2), new NumNode(3));
 
-        assertEquals(5, node.eval());
+        assertEquals(5, n.eval());
     }
 
     @Test
     public void testSubtractEval() {
-        AST node = new BinopNode("-", new NumNode(10), new NumNode(4));
+        AST n = new BinopNode("-", new NumNode(10), new NumNode(4));
 
-        assertEquals(6, node.eval());
+        assertEquals(6, n.eval());
     }
 
     @Test
     public void testMultiplyEval() {
-        AST node = new BinopNode("*", new NumNode(6), new NumNode(7));
+        AST n = new BinopNode("*", new NumNode(6), new NumNode(7));
 
-        assertEquals(42, node.eval());
+        assertEquals(42, n.eval());
     }
 
     @Test
     public void testDivideEval() {
-        AST node = new BinopNode("/", new NumNode(6), new NumNode(4));
+        AST n = new BinopNode("/", new NumNode(6), new NumNode(4));
 
-        assertEquals(1.5, node.eval());
+        assertEquals(1.5, n.eval());
     }
 
     @Test
     public void testPowerEval() {
-        AST node = new BinopNode("^", new NumNode(2), new NumNode(10));
+        AST n = new BinopNode("^", new NumNode(2), new NumNode(10));
 
-        assertEquals(1024, node.eval());
+        assertEquals(1024, n.eval());
     }
 
     @Test
     public void testInvalidOperatorEval() {
-        AST node = new BinopNode("%", new NumNode(2), new NumNode(3));
+        AST n = new BinopNode("%", new NumNode(2), new NumNode(3));
 
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
-                () -> node.eval()
+                () -> n.eval()
         );
 
-        assertEquals("invalid operator", error.getMessage());
+        assertEquals("invalid operator", e.getMessage());
     }
 
     @Test
     public void testNestedEval() {
         // 2 * (3 + 4)
-        AST addition = new BinopNode("+", new NumNode(3), new NumNode(4));
-        AST node = new BinopNode("*", new NumNode(2), addition);
+        AST sum = new BinopNode("+", new NumNode(3), new NumNode(4));
+        AST n = new BinopNode("*", new NumNode(2), sum);
 
-        assertEquals(14, node.eval());
+        assertEquals(14, n.eval());
     }
 
     @Test

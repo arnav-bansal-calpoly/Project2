@@ -81,7 +81,7 @@ public class ParserTest {
     public void testMultipleOperations() {
         AST result = Parser.parsePostfix("2 3 + 4 *");
 
-        AST addition = new BinopNode(
+        AST sum = new BinopNode(
                 "+",
                 new NumNode(2),
                 new NumNode(3)
@@ -89,7 +89,7 @@ public class ParserTest {
 
         AST expected = new BinopNode(
                 "*",
-                addition,
+                sum,
                 new NumNode(4)
         );
 
@@ -112,24 +112,24 @@ public class ParserTest {
 
     @Test
     public void testEmptyInput() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parsePostfix("")
         );
 
-        assertEquals("empty input", error.getMessage());
+        assertEquals("empty input", e.getMessage());
     }
 
 
 
     @Test
     public void testNoOperators() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parsePostfix("2 3")
         );
 
-        assertEquals("too many operands", error.getMessage());
+        assertEquals("too many operands", e.getMessage());
     }
 
     @Test
@@ -147,12 +147,12 @@ public class ParserTest {
 
     @Test
     public void testApplyOperator() {
-        ArrayStack<AST> stack = ArrayStack.emptyStack();
+        ArrayStack<AST> s = ArrayStack.emptyStack();
 
-        stack.push(new NumNode(10));
-        stack.push(new NumNode(5));
+        s.push(new NumNode(10));
+        s.push(new NumNode(5));
 
-        Parser.applyOperator(stack, "-");
+        Parser.applyOperator(s, "-");
 
         AST expected = new BinopNode(
                 "-",
@@ -160,38 +160,38 @@ public class ParserTest {
                 new NumNode(5)
         );
 
-        assertEquals(1, stack.size());
-        assertEquals(expected, stack.pop());
+        assertEquals(1, s.size());
+        assertEquals(expected, s.pop());
     }
 
     @Test
     public void testPostfixInvalidToken() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parsePostfix("2 a +")
         );
 
-        assertEquals("invalid token", error.getMessage());
+        assertEquals("invalid token", e.getMessage());
     }
 
     @Test
     public void testPostfixInsufficientOperands() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parsePostfix("2 +")
         );
 
-        assertEquals("insufficient operands", error.getMessage());
+        assertEquals("insufficient operands", e.getMessage());
     }
 
     @Test
     public void testPostfixTooManyOperands() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parsePostfix("2 3 4 +")
         );
 
-        assertEquals("too many operands", error.getMessage());
+        assertEquals("too many operands", e.getMessage());
     }
 
     @Test
@@ -251,7 +251,7 @@ public class ParserTest {
         // 2 + 3 * 4 should be 2 + (3 * 4)
         AST result = Parser.parseInfix("2 + 3 * 4");
 
-        AST multiply = new BinopNode(
+        AST product = new BinopNode(
                 "*",
                 new NumNode(3),
                 new NumNode(4)
@@ -260,7 +260,7 @@ public class ParserTest {
         AST expected = new BinopNode(
                 "+",
                 new NumNode(2),
-                multiply
+                product
         );
 
         assertEquals(expected, result);
@@ -271,7 +271,7 @@ public class ParserTest {
         // 2 * 3 + 4 should be (2 * 3) + 4
         AST result = Parser.parseInfix("2 * 3 + 4");
 
-        AST multiply = new BinopNode(
+        AST product = new BinopNode(
                 "*",
                 new NumNode(2),
                 new NumNode(3)
@@ -279,7 +279,7 @@ public class ParserTest {
 
         AST expected = new BinopNode(
                 "+",
-                multiply,
+                product,
                 new NumNode(4)
         );
 
@@ -291,7 +291,7 @@ public class ParserTest {
         // 10 - 4 - 3 should be (10 - 4) - 3
         AST result = Parser.parseInfix("10 - 4 - 3");
 
-        AST first = new BinopNode(
+        AST diff = new BinopNode(
                 "-",
                 new NumNode(10),
                 new NumNode(4)
@@ -299,7 +299,7 @@ public class ParserTest {
 
         AST expected = new BinopNode(
                 "-",
-                first,
+                diff,
                 new NumNode(3)
         );
 
@@ -311,7 +311,7 @@ public class ParserTest {
         // 2 ^ 3 ^ 2 should be 2 ^ (3 ^ 2)
         AST result = Parser.parseInfix("2 ^ 3 ^ 2");
 
-        AST power = new BinopNode(
+        AST pow = new BinopNode(
                 "^",
                 new NumNode(3),
                 new NumNode(2)
@@ -320,7 +320,7 @@ public class ParserTest {
         AST expected = new BinopNode(
                 "^",
                 new NumNode(2),
-                power
+                pow
         );
 
         assertEquals(expected, result);
@@ -330,7 +330,7 @@ public class ParserTest {
     public void testInfixParentheses() {
         AST result = Parser.parseInfix("2 * ( 3 + 4 )");
 
-        AST addition = new BinopNode(
+        AST sum = new BinopNode(
                 "+",
                 new NumNode(3),
                 new NumNode(4)
@@ -339,7 +339,7 @@ public class ParserTest {
         AST expected = new BinopNode(
                 "*",
                 new NumNode(2),
-                addition
+                sum
         );
 
         assertEquals(expected, result);
@@ -349,21 +349,21 @@ public class ParserTest {
     public void testInfixNestedParentheses() {
         AST result = Parser.parseInfix("( ( 1 + 2 ) * 3 ) - 4");
 
-        AST addition = new BinopNode(
+        AST sum = new BinopNode(
                 "+",
                 new NumNode(1),
                 new NumNode(2)
         );
 
-        AST multiply = new BinopNode(
+        AST product = new BinopNode(
                 "*",
-                addition,
+                sum,
                 new NumNode(3)
         );
 
         AST expected = new BinopNode(
                 "-",
-                multiply,
+                product,
                 new NumNode(4)
         );
 
@@ -372,71 +372,71 @@ public class ParserTest {
 
     @Test
     public void testInfixEmptyInput() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parseInfix("")
         );
 
-        assertEquals("empty input", error.getMessage());
+        assertEquals("empty input", e.getMessage());
     }
 
     @Test
     public void testInfixInvalidToken() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parseInfix("2 + a")
         );
 
-        assertEquals("invalid token", error.getMessage());
+        assertEquals("invalid token", e.getMessage());
     }
 
     @Test
     public void testInfixInsufficientOperands() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parseInfix("2 +")
         );
 
-        assertEquals("insufficient operands", error.getMessage());
+        assertEquals("insufficient operands", e.getMessage());
     }
 
     @Test
     public void testInfixEmptyParentheses() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parseInfix("( )")
         );
 
-        assertEquals("insufficient operands", error.getMessage());
+        assertEquals("insufficient operands", e.getMessage());
     }
 
     @Test
     public void testInfixTooManyOperands() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parseInfix("2 + 3 4")
         );
 
-        assertEquals("too many operands", error.getMessage());
+        assertEquals("too many operands", e.getMessage());
     }
 
     @Test
     public void testInfixMismatchedOpenParen() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parseInfix("( 2 + 3")
         );
 
-        assertEquals("mismatched open paren", error.getMessage());
+        assertEquals("mismatched open paren", e.getMessage());
     }
 
     @Test
     public void testInfixMismatchedCloseParen() {
-        IllegalArgumentException error = assertThrows(
+        IllegalArgumentException e = assertThrows(
                 IllegalArgumentException.class,
                 () -> Parser.parseInfix("2 + 3 )")
         );
 
-        assertEquals("mismatched close paren", error.getMessage());
+        assertEquals("mismatched close paren", e.getMessage());
     }
 }

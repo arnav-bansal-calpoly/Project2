@@ -1,22 +1,22 @@
 // Stores the operator and the left and right expressions.
-public record BinopNode(String operator, AST left, AST right) implements AST {
+public record BinopNode(String op, AST left, AST right) implements AST {
 
     // Evaluates both sides first and then applies the operator to them.
     @Override
     public double eval() {
-        double leftValue = left.eval();
-        double rightValue = right.eval();
+        double a = left.eval();
+        double b = right.eval();
 
-        if (operator.equals("+")) {
-            return leftValue + rightValue;
-        } else if (operator.equals("-")) {
-            return leftValue - rightValue;
-        } else if (operator.equals("*")) {
-            return leftValue * rightValue;
-        } else if (operator.equals("/")) {
-            return leftValue / rightValue;
-        } else if (operator.equals("^")) {
-            return Math.pow(leftValue, rightValue);
+        if (op.equals("+")) {
+            return a + b;
+        } else if (op.equals("-")) {
+            return a - b;
+        } else if (op.equals("*")) {
+            return a * b;
+        } else if (op.equals("/")) {
+            return a / b;
+        } else if (op.equals("^")) {
+            return Math.pow(a, b);
         }
 
         throw new IllegalArgumentException("invalid operator");

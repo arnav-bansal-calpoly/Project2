@@ -2,12 +2,12 @@
 public class ArrayStack<T> {
 
     // Stores all the items in the stack.
-    private Object[] data;
+    private Object[] values;
     private int size;
 
     // Creates an empty stack with space for 10 items.
     private ArrayStack() {
-        data = new Object[10];
+        values = new Object[10];
         size = 0;
     }
 
@@ -19,17 +19,17 @@ public class ArrayStack<T> {
     // Adds a value to the top of the stack.
     // If the array is full, we make a larger array first.
     public void push(T value) {
-        if (size == data.length) {
-            Object[] newData = new Object[data.length * 2];
+        if (size == values.length) {
+            Object[] bigger = new Object[values.length * 2];
 
-            for (int i = 0; i < data.length; i++) {
-                newData[i] = data[i];
+            for (int i = 0; i < values.length; i++) {
+                bigger[i] = values[i];
             }
 
-            data = newData;
+            values = bigger;
         }
 
-        data[size] = value;
+        values[size] = value;
         size++;
     }
 
@@ -41,11 +41,11 @@ public class ArrayStack<T> {
             throw new IndexOutOfBoundsException();
         }
         size--;
-        T result = (T) data[size];
-        data[size] = null;
+        T value = (T) values[size];
+        values[size] = null;
 
 
-        return result;
+        return value;
     }
 
     // Returns the top item without removing it.
@@ -56,7 +56,7 @@ public class ArrayStack<T> {
             throw new IndexOutOfBoundsException();
         }
 
-        return (T) data[size - 1];
+        return (T) values[size - 1];
     }
 
     // Returns true if the stack has no items.

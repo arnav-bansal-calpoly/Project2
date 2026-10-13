@@ -6,86 +6,86 @@ public class ArrayStackTest {
 
     @Test
     public void testEmptyStack() {
-        ArrayStack<Integer> stack = ArrayStack.emptyStack();
+        ArrayStack<Integer> s = ArrayStack.emptyStack();
 
-        assertTrue(stack.isEmpty());
-        assertEquals(0, stack.size());
+        assertTrue(s.isEmpty());
+        assertEquals(0, s.size());
     }
 
     @Test
     public void testPush() {
-        ArrayStack<Integer> stack = ArrayStack.emptyStack();
+        ArrayStack<Integer> s = ArrayStack.emptyStack();
 
-        stack.push(10);
-        assertEquals(1, stack.size());
-        assertEquals(10, stack.peek());
+        s.push(10);
+        assertEquals(1, s.size());
+        assertEquals(10, s.peek());
 
-        stack.push(20);
-        assertEquals(2, stack.size());
-        assertEquals(20, stack.peek());
+        s.push(20);
+        assertEquals(2, s.size());
+        assertEquals(20, s.peek());
 
-        assertFalse(stack.isEmpty());
+        assertFalse(s.isEmpty());
     }
 
     @Test
     public void testPop() {
-        ArrayStack<Integer> stack = ArrayStack.emptyStack();
+        ArrayStack<Integer> s = ArrayStack.emptyStack();
 
-        stack.push(10);
-        stack.push(20);
-        stack.push(30);
+        s.push(10);
+        s.push(20);
+        s.push(30);
 
-        assertEquals(30, stack.pop());
-        assertEquals(20, stack.pop());
-        assertEquals(10, stack.pop());
+        assertEquals(30, s.pop());
+        assertEquals(20, s.pop());
+        assertEquals(10, s.pop());
 
-        assertTrue(stack.isEmpty());
-        assertEquals(0, stack.size());
+        assertTrue(s.isEmpty());
+        assertEquals(0, s.size());
     }
 
     @Test
     public void testPeek() {
-        ArrayStack<String> stack = ArrayStack.emptyStack();
+        ArrayStack<String> s = ArrayStack.emptyStack();
 
-        stack.push("hello");
-        stack.push("world");
+        s.push("hello");
+        s.push("world");
 
-        assertEquals("world", stack.peek());
-        assertEquals("world", stack.peek());
-        assertEquals(2, stack.size());
+        assertEquals("world", s.peek());
+        assertEquals("world", s.peek());
+        assertEquals(2, s.size());
     }
 
     @Test
     public void testPopEmpty() {
-        ArrayStack<Integer> stack = ArrayStack.emptyStack();
+        ArrayStack<Integer> s = ArrayStack.emptyStack();
 
         assertThrows(IndexOutOfBoundsException.class,
-                () -> stack.pop());
+                () -> s.pop());
     }
 
     @Test
     public void testPeekEmpty() {
-        ArrayStack<Integer> stack = ArrayStack.emptyStack();
+        ArrayStack<Integer> s = ArrayStack.emptyStack();
 
         assertThrows(IndexOutOfBoundsException.class,
-                () -> stack.peek());
+                () -> s.peek());
     }
 
     @Test
     public void testResize() {
-        ArrayStack<Integer> stack = ArrayStack.emptyStack();
+        ArrayStack<Integer> s = ArrayStack.emptyStack();
 
         for (int i = 0; i < 25; i++) {
-            stack.push(i);
+            s.push(i);
         }
 
-        assertEquals(25, stack.size());
+        assertEquals(25, s.size());
 
         for (int i = 24; i >= 0; i--) {
-            assertEquals(i, stack.pop());
+            assertEquals(i, s.pop());
         }
 
-        assertTrue(stack.isEmpty());
+        assertTrue(s.isEmpty());
     }
 
 
